@@ -1,250 +1,115 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+"use client";
+import React, { useState, useEffect } from "react";
 import { Game, GameFormData } from '@/types/games';
 
 interface GameFormProps {
   editingGame: Game | null;
-  onSubmit: (data: GameFormData) => void;
+  onSubmit: (formData: GameFormData) => void;
   onCancel: () => void;
 }
 
-export default function GameForm({
-  editingGame,
-  onSubmit,
-  onCancel,
-}: GameFormProps) {
-  // ข้อ 18: เก็บทุกฟิลด์ไว้ใน State ก้อนเดียว
-  const [formData, setFormData] = useState<GameFormData>({
-    title: '',
-    platform: '',
-    expectedHours: '',
-    status: 'ยังไม่เริ่ม',
-  });
+export default function GameForm({ editingGame, onSubmit, onCancel }: GameFormProps) {
+  const [title, setTitle] = useState("");
+  const [platform, setPlatform] = useState("");
+  const [expectedHours, setExpectedHours] = useState("");
+  const [status, setStatus] = useState<Game["status"]>("ยังไม่เริ่ม");
 
-  // ข้อ 20: ข้อความแจ้งเตือนใต้ฟิลด์ที่ไม่ผ่านการตรวจสอบ
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
-  // ข้อ 21: เมื่อมีการกดแก้ไข นำค่าเดิมกลับเข้าฟอร์ม
   useEffect(() => {
     if (editingGame) {
-      setFormData({
-        title: editingGame.title,
-        platform: editingGame.platform,
-        expectedHours: editingGame.expectedHours.toString(),
-        status: editingGame.status,
-      });
-      setErrors({});
+      setTitle(editingGame.title);
+      setPlatform(editingGame.platform);
+      setExpectedHours(editingGame.expectedHours.toString());
+      setStatus(editingGame.status);
     } else {
-      setFormData({
-        title: '',
-        platform: '',
-        expectedHours: '',
-        status: 'ยังไม่เริ่ม',
-      });
-      setErrors({});
+      setTitle("");
+      setPlatform("");
+      setExpectedHours("");
+      setStatus("ยังไม่เริ่ม");
     }
   }, [editingGame]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // ข้อ 19: ตรวจสอบความถูกต้องก่อนบันทึก
-  const validate = (): boolean => {
-    const newErrors: { [key: string]: string } = {};
-
-    if (!formData.title.trim()) {
-      newErrors.title = 'กรุณากรอกชื่อเกม';
-    }
-
-    if (!formData.platform.trim()) {
-      newErrors.platform = 'กรุณาเลือกแพลตฟอร์ม';
-    }
-
-    const hours = Number(formData.expectedHours);
-    if (
-      !formData.expectedHours ||
-      isNaN(hours) ||
-      hours <= 0 ||
-      !Number.isInteger(hours)
-    ) {
-      newErrors.expectedHours = 'จำนวนชั่วโมงต้องเป็นจำนวนเต็มบวก';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
-
-    onSubmit(formData);
-
-    // รีเซ็ตฟอร์มหลังบันทึก
-    setFormData({
-      title: '',
-      platform: '',
-      expectedHours: '',
-      status: 'ยังไม่เริ่ม',
+    if (!title || !platform || !expectedHours) return;
+    
+    onSubmit({
+      title,
+      platform,
+      expectedHours: Number(expectedHours),
+      status,
     });
-    setErrors({});
+
+    setTitle("");
+    setPlatform("");
+    setExpectedHours("");
+    setStatus("ยังไม่เริ่ม");
   };
 
   return (
-    <div
-      style={{
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        padding: '20px',
-        backgroundColor: '#f9f9f9',
-        marginBottom: '32px',
-      }}
-    >
-      <h2 style={{ marginTop: 0 }}>
-        {editingGame ? 'แก้ไขข้อมูลเกม' : 'เพิ่มเกมใหม่'}
-      </h2>
-
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-      >
-        {/* ชื่อเกม */}
+    // 🟢 ปรับโครงสร้างฟอร์มให้ขาวสะอาด ขอบมนนุ่มนวล จัด Grid เรียงช่องไฟพอดีหน้าจอ
+    <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm max-w-5xl mx-auto w-full text-left">
+      <div className="flex items-center gap-2 mb-4">
+        <span className="w-1 h-4 bg-blue-600 rounded-full"></span>
+        <h2 className="text-sm font-bold text-gray-800 m-0">
+          {editingGame ? "📝 แก้ไขข้อมูลเกมในคลัง" : "➕ เพิ่มเกมใหม่เข้าคลัง"}
+        </h2>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
         <div>
-          <label style={{ display: 'block', marginBottom: '4px' }}>
-            ชื่อเกม:
-          </label>
+          <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">ชื่อเกม</label>
           <input
             type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '8px',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-            }}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="เช่น GTA V"
+            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white text-gray-800 text-sm placeholder-gray-400 transition-all"
           />
-          {errors.title && (
-            <p style={{ color: 'red', margin: '4px 0 0', fontSize: '0.9rem' }}>
-              {errors.title}
-            </p>
-          )}
         </div>
 
-        {/* แพลตฟอร์ม */}
         <div>
-          <label style={{ display: 'block', marginBottom: '4px' }}>
-            แพลตฟอร์ม:
-          </label>
+          <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">แพลตฟอร์ม</label>
           <select
-            name="platform"
-            value={formData.platform}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '8px',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-            }}
+            value={platform}
+            onChange={(e) => setPlatform(e.target.value)}
+            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white text-gray-700 text-sm transition-all"
           >
             <option value="">-- เลือกแพลตฟอร์ม --</option>
             <option value="PC">PC</option>
-            <option value="PlayStation 5">PlayStation 5</option>
+            <option value="PlayStation">PlayStation</option>
+            <option value="Xbox">Xbox</option>
             <option value="Nintendo Switch">Nintendo Switch</option>
-            <option value="Xbox Series X">Xbox Series X</option>
+            <option value="Mobile">Mobile</option>
           </select>
-          {errors.platform && (
-            <p style={{ color: 'red', margin: '4px 0 0', fontSize: '0.9rem' }}>
-              {errors.platform}
-            </p>
-          )}
         </div>
 
-        {/* จำนวนชั่วโมง */}
         <div>
-          <label style={{ display: 'block', marginBottom: '4px' }}>
-            จำนวนชั่วโมงที่คาดว่าจะใช้เล่น:
-          </label>
+          <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">เวลาที่คาดว่าจะใช้ (ชั่วโมง)</label>
           <input
             type="number"
-            name="expectedHours"
-            value={formData.expectedHours}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '8px',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-            }}
+            value={expectedHours}
+            onChange={(e) => setExpectedHours(e.target.value)}
+            placeholder="ระบุจำนวนชั่วโมง"
+            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white text-gray-800 text-sm placeholder-gray-400 transition-all"
           />
-          {errors.expectedHours && (
-            <p style={{ color: 'red', margin: '4px 0 0', fontSize: '0.9rem' }}>
-              {errors.expectedHours}
-            </p>
-          )}
         </div>
 
-        {/* สถานะ */}
-        <div>
-          <label style={{ display: 'block', marginBottom: '4px' }}>
-            สถานะ:
-          </label>
-          <select
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '8px',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-            }}
-          >
-            <option value="ยังไม่เริ่ม">ยังไม่เริ่ม</option>
-            <option value="กำลังเล่น">กำลังเล่น</option>
-            <option value="เล่นจบแล้ว">เล่นจบแล้ว</option>
-          </select>
-        </div>
-
-        {/* ปุ่ม Submit/Cancel */}
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button
-            type="submit"
-            style={{
-              padding: '10px 16px',
-              backgroundColor: editingGame ? '#ffc107' : '#28a745',
-              color: editingGame ? '#000' : '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-            }}
-          >
-            {editingGame ? 'บันทึกการแก้ไข' : 'เพิ่มเกม'}
-          </button>
-
+        <div className="flex gap-2">
           {editingGame && (
             <button
               type="button"
               onClick={onCancel}
-              style={{
-                padding: '10px 16px',
-                backgroundColor: '#6c757d',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-              }}
+              className="w-1/3 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-2.5 px-3 rounded-xl text-xs transition-colors cursor-pointer border-none"
             >
               ยกเลิก
             </button>
           )}
+          <button
+            type="submit"
+            className={`${editingGame ? 'w-2/3' : 'w-full'} bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-sm transition-all cursor-pointer border-none`}
+          >
+            {editingGame ? "อัปเดตข้อมูล" : "บันทึกข้อมูล"}
+          </button>
         </div>
       </form>
     </div>

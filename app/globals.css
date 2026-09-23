@@ -69,10 +69,6 @@ h1 {
   font-weight: 700;
 }
 
-p {
-  color: var(--text-secondary);
-  margin-bottom: 0.5rem;
-}
 
 /* Badges */
 .badge-group {
