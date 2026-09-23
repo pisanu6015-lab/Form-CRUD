@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+:root {
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --primary: #15803d;      /* สีเขียวหลัก */
+  --primary-hover: #166534;/* สีเขียวเข้มตอน Hover */
+  --accent: #dcfce7;       /* สีเขียวอ่อนสำหรับ Badge */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border: #e2e8f0;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+}
+
+/* Header & Navbar */
+.siteHeader {
+  background-color: var(--primary);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.navbar {
+  width: min(100% - 2rem, 72rem);
+  margin-inline: auto;
+}
+
+.navList {
+  display: flex;
+  gap: 2rem;            
+  padding: 1.25rem 0;
+  list-style: none;
+}
+
+.navLink {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 1.15rem;
+  font-weight: 600;
+  transition: opacity 0.25s;
+}
+
+.navLink:hover {
+  opacity: 0.8;
+}
+
+/* Layout Page Container */
+.page {
+  width: min(100% - 2rem, 72rem);
+  margin-inline: auto;
+  padding-block: 2.5rem;
+}
+
+h1 {
+  font-size: 2.25rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+p {
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+/* Badges */
+.badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.badge {
+  background-color: var(--accent);
+  color: var(--primary-hover);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Course Grid & Cards */
+.courseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.courseCard {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.courseCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.courseCard h2 {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.status-open {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.status-closed {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.searchContainer {
+  max-width: 32rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.85rem 1.25rem;
+  font-size: 1.05rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+  border-color: var(--primary);
+}
